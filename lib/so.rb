@@ -1,7 +1,7 @@
 require 'rest-client'
 require 'zlib'
 
-module SO
+class SO
   module Cli
     def self.parse(argv)
       { user_id:         argv[1],
@@ -10,19 +10,23 @@ module SO
       }
     end
 
-    # argv:  ["-u", "184212", "users/posts", "test_posts.json"]
     def self.run(argv, stdout)
       options = parse(argv)
-
-      # query the api
-      response = RestClient.get "http://api.stackexchange.com/2.2/users/#{options[:user_id]}/posts?order=desc&sort=activity&site=stackoverflow"
-
-      # write to the file
-      File.write options[:output_filename], response
-
+      SO.call(options)
       stdout.puts "Successfully wrote the data to #{options[:output_filename]}!"
-
       0
     end
+  end
+
+
+  def self.call(options)
+    response = RestClient.get url_for(options)
+    File.write options[:output_filename], response
+    response
+  end
+
+  def self.url_for(options)
+    # endpoint: "users/posts"
+    "http://api.stackexchange.com/2.2/users/#{options[:user_id]}/posts?order=desc&sort=activity&site=stackoverflow"
   end
 end
