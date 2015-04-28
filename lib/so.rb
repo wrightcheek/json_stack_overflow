@@ -70,3 +70,7 @@ class SO
     end
   end
 end
+
+# hash  = JSON.parse(File.read('my_posts.json'), symbolize_names: true)
+# posts = hash[:items].map { |post_hash| SO::Post.new post_hash }
+# posts.first.link # => "http://stackoverflow.com/q/2938301"
