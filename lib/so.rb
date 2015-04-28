@@ -30,3 +30,43 @@ class SO
     "http://api.stackexchange.com/2.2/users/#{options[:user_id]}/posts?order=desc&sort=activity&site=stackoverflow"
   end
 end
+
+class SO
+  class HasHashAttributes
+    def self.getter_from_attribute(*getter_names)
+      getter_names.each do |name|
+        define_method(name) { attributes[name] }
+      end
+    end
+
+    attr_accessor :attributes
+
+    def initialize(attributes)
+      self.attributes = attributes
+    end
+  end
+
+  class User < HasHashAttributes
+    getter_from_attribute :reputation,
+                          :user_id,
+                          :user_type,
+                          :accept_rate,
+                          :profile_image,
+                          :display_name,
+                          :link
+  end
+
+  class Post < HasHashAttributes
+    getter_from_attribute :score,
+                          :last_edit_date,
+                          :last_activity_date,
+                          :creation_date,
+                          :post_type,
+                          :post_id,
+                          :link
+
+    def owner
+      @owner ||= User.new(attributes[:owner])
+    end
+  end
+end
